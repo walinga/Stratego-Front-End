@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Board from './Board.jsx'
 
 // TODO: Need some actual URL to hit the server with (Heroku!?)
-const herokuUrl = "localhost"
+export const herokuUrl = "localhost"
 
 /*
  * A wrapper around the Game Component that handles the logic and API calls
@@ -14,7 +14,9 @@ class Game extends Component {
     this.state = {
       piecePositions: {},
       possibleMoves: [],
-      started: false
+      revealedPieces: null,
+      powerUsers: null,
+      lastMove: null
     };
 
     this.onClickPiece = this.onClickPiece.bind(this);
@@ -24,7 +26,8 @@ class Game extends Component {
 
   onClickPiece(i,j) {
     console.log(i,j); //  DEBUG
-    fetch(`http://${herokuUrl}:8051/getValidMoves`, {method: "POST", body: `${i},${j} b`})
+    const team = this.props.team;
+    fetch(`http://${herokuUrl}:8051/getValidMoves`, {method: "POST", body: `${i},${j} ${team}`})
     .then(response =>{
       console.log(response); // DEBUG
       return response.text(); // TODO: Jsonify here eventually
@@ -38,7 +41,8 @@ class Game extends Component {
   swapPieces(i1, j1, i2, j2) {
     console.log("swap pieces!");
     console.log(i1, j1, i2, j2); //  DEBUG
-    fetch(`http://${herokuUrl}:8051/swapPieces`, {method: "POST", body: `${i1},${j1} ${i2},${j2} b`})
+    const team = this.props.team;
+    fetch(`http://${herokuUrl}:8051/swapPieces`, {method: "POST", body: `${i1},${j1} ${i2},${j2} ${team}`})
     .then(response =>{
       console.log(response); // DEBUG
       return response.text(); // TODO: Jsonify here eventually
@@ -54,32 +58,51 @@ class Game extends Component {
   movePiece(i1, j1, i2, j2) {
     console.log("move piece!");
     console.log(i1, j1, i2, j2); //  DEBUG
-    fetch(`http://${herokuUrl}:8051/makeMove`, {method: "POST", body: `${i1},${j1} ${i2},${j2} b`})
+    const team = this.props.team;
+    fetch(`http://${herokuUrl}:8051/makeMove`, {method: "POST", body: `${i1},${j1} ${i2},${j2} ${team}`})
     .then(response =>{
       console.log(response); // DEBUG
-      return response.text(); // TODO: Jsonify here eventually
+      return response.json();
     }).then(data => {
       console.log("data:"); // DEBUG
       console.log(data);
-      const positions = this.parseBoard(data.slice(data.search(/\?/), -1));
-      this.setState({piecePositions: positions, possibleMoves: []});
-    })
-  }
+      if (data.Winner) {
+        this.props.onGameOver(data.Winner === "r" ? 'Red' : 'Blue');
+      } else {
+        const rawBoard = data.boardState;
+        console.log(rawBoard); // DEBUG
+        const positions = this.parseBoard(rawBoard);
+        let revealedPiece = null;
+        let powerUsers = null;
+        let lastMove = null;
+        if (data.revealedPiece) {
+          revealedPiece = data.revealedPiece;
+          console.log(revealedPiece);
+        }
+        if (data.lastPowerUser) {
+          powerUsers = data.lastPowerUser;
+          console.log(powerUsers);
+        }
+        if (data.lastMove) {
+          lastMove = data.lastMove;
+          console.log(lastMove);
+        }
 
-  sendSubmitTeam(team) {
-    fetch(`http://${herokuUrl}:8051/submitTeam`, {method: "POST", body: team})
-    .then(response =>{
-      console.log(response); // DEBUG
-      return response.text(); // TODO: Jsonify here eventually
-    }).then(data => {
-      const started = data === 'true';
-      if (started) this.setState({ started })
+        this.setState({
+          piecePositions: positions,
+          possibleMoves: [],
+          revealedPieces: revealedPiece,
+          powerUsers: powerUsers,
+          lastMove: lastMove
+        });
+      }
     })
   }
 
   componentDidMount() {
+    const team = this.props.team;
     // TODO: Def should be a GET. Figure out how to parse URL params in Java
-    fetch(`http://${herokuUrl}:8051/getBoard`, {method: "POST", body: "b"})
+    fetch(`http://${herokuUrl}:8051/getBoard`, {method: "POST", body: team})
     .then(response =>{
       console.log(response); // DEBUG
       return response.text(); // TODO: Jsonify here eventually
@@ -92,19 +115,13 @@ class Game extends Component {
     })
   }
 
-  componentDidUpdate(prevProps) {
-    if (this.props.setupdone !== prevProps.setupdone) {
-      // TODO: Only send one lol. Just for testing
-      // // DEBUG: //
-      this.sendSubmitTeam("r");
-      this.sendSubmitTeam("b");
-    }
-  }
-
   parseBoard(data) {
-    // NOTE: Could easily construct this using a list of coords from the server
+    // NOTE: Could "easily" construct this using a list of coords from the server
     let positions = {};
-    const pieceData = data.split(/\s+/).map(x => x.trim());
+    let pieceData = data.split(/\s+/).map(x => x.trim());
+    if (this.props.team === 'r') {
+      pieceData = pieceData.reverse().slice(1); // trailing newline
+    }
     // NOTE: stuff is orange because of some weird Atom syntax bug
     for (let i=0;i<8;i++) {
       for (let j=0; j<10; j++) {
@@ -120,14 +137,19 @@ class Game extends Component {
   }
 
   render() {
-    const {piecePositions, possibleMoves, started} = this.state;
+    const {piecePositions, possibleMoves, revealedPieces, powerUsers, lastMove} = this.state;
+    const {team, started} = this.props;
 
     return (
       <Board
         piecePositions={piecePositions}
         possibleMoves={possibleMoves}
+        revealedPieces={revealedPieces}
+        powerUsers={powerUsers}
+        lastMove={lastMove}
         onClickPiece={started ? this.onClickPiece : () => {}}
         onSecondClick={started ? this.movePiece : this.swapPieces}
+        team={team}
       />
     );
   }
