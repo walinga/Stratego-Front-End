@@ -6,11 +6,14 @@ class Square extends Component {
     if (!piece) {
       return piece;
     }
+    if (piece === 'x' || piece === '?') {
+      return '';
+    }
     if (piece.includes('11')) {
       return 'F';
     }
     if (piece.includes('0') && !piece.includes('10')) {
-      return piece.replace(/0./, 'TRAP');
+      return piece.replace(/0./, 'T');
     }
     if (/^1(r|b)/.test(piece)) {
       return 'S';
@@ -32,35 +35,33 @@ class Square extends Component {
     } else if (piece.includes('b')) {
       style.color = '#0065ff'; // BLUE
     }
-    if (piece === '?') {
-      style.fontSize = '34px';
-      style.marginTop = '16px';
-      style.position = 'relative';
-    }
     return style;
   }
 
   getImage(piece) {
     const back_images = {
       // NOTE: Be careful of 1 vs 10, 11 lol
-      0: 'trap.jpg',
+      0: 'fire.png',
       1: 'assassin.png',
-      2: 'wolf.jpg',
+      2: 'wolf.png',
       3: 'dwarf.png',
-      4: 'archer.svg',
-      5: 'hulk.jpg',
-      6: 'sorcerer.svg',
+      4: 'archer.png',
+      5: 'ogre.png',
+      6: 'sorcerer.png',
       7: 'rider.png',
       8: 'knight.png',
       9: 'wizard.png',
-      x: 'fire.png'
+      x: 'barrier.png'
     }
 
     if (!piece) return false;
+    if (piece.includes('?')) {
+      return this.props.team === 'r' ? 'blue-team.png' : 'red-team.png'
+    }
     if (piece.includes('11')) {
       return 'flag.png'
     } else if (piece.includes('10')) {
-      return 'dragon.jpg'
+      return 'dragon.png'
     }
     return back_images[piece[0]]
   }

@@ -98,7 +98,8 @@ class Board extends Component {
 
   render() {
     const {
-      piecePositions
+      piecePositions,
+      team
     } = this.props;
 
     let squares = [];
@@ -109,6 +110,7 @@ class Board extends Component {
           key={[i,j]}
           row={i}
           col={j}
+          team={team}
           piece={this.parseRevealed(i, j) || (piecePositions[i] && piecePositions[i][j])}
           onClick={() => this.onClick(i+1,j+1)}
           showMoveIndicator={this.shouldShowMoveIndicator(i,j)}
