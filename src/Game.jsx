@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Board from './Board.jsx'
 
 // TODO: Need some actual URL to hit the server with (Heroku!?)
-export const herokuUrl = "localhost"
+export const herokuUrl = "192.168.0.18"// "localhost"
 
 /*
  * A wrapper around the Game Component that handles the logic and API calls
@@ -39,7 +39,6 @@ class Game extends Component {
   }
 
   swapPieces(i1, j1, i2, j2) {
-    console.log("swap pieces!");
     console.log(i1, j1, i2, j2); //  DEBUG
     const team = this.props.team;
     fetch(`http://${herokuUrl}:8051/swapPieces`, {method: "POST", body: `${i1},${j1} ${i2},${j2} ${team}`})
@@ -72,27 +71,18 @@ class Game extends Component {
         const rawBoard = data.boardState;
         console.log(rawBoard); // DEBUG
         const positions = this.parseBoard(rawBoard);
-        let revealedPiece = null;
-        let powerUsers = null;
-        let lastMove = null;
-        if (data.revealedPiece) {
-          revealedPiece = data.revealedPiece;
-          console.log(revealedPiece);
-        }
-        if (data.lastPowerUser) {
-          powerUsers = data.lastPowerUser;
-          console.log(powerUsers);
-        }
-        if (data.lastMove) {
-          lastMove = data.lastMove;
-          console.log(lastMove);
-        }
+        const revealedPiece = data.revealedPiece || null;
+        console.log(revealedPiece);
+        const powerUser = data.lastPowerUser || null;
+        console.log(powerUser);
+        const lastMove = data.lastMove || null;
+        console.log(lastMove);
 
         this.setState({
           piecePositions: positions,
           possibleMoves: [],
           revealedPieces: revealedPiece,
-          powerUsers: powerUsers,
+          powerUsers: powerUser,
           lastMove: lastMove
         });
       }

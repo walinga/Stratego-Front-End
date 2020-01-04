@@ -15,8 +15,7 @@ class Board extends Component {
     this.onClick = this.onClick.bind(this);
     this.shouldShowMoveIndicator = this.shouldShowMoveIndicator.bind(this);
     this.parseRevealed = this.parseRevealed.bind(this);
-    this.isLastMoveStart = this.isLastMoveStart.bind(this);
-    this.isLastMoveEnd = this.isLastMoveEnd.bind(this);
+    this.islastMove2 = this.islastMove2.bind(this);
   }
 
   onClick(i,j) {
@@ -42,6 +41,11 @@ class Board extends Component {
     return `(${i+1},${j+1})`
   }
 
+  // Replaces `(` with `\(` for use in regex
+  esc(c) {
+    return c.replace('(', '\\(').replace(')', '\\)');
+  }
+
   shouldShowMoveIndicator(i,j) {
     const {team,possibleMoves} = this.props;
     if (team === 'r') {
@@ -59,11 +63,14 @@ class Board extends Component {
     if (revealedPieces !== null) {
       // Attacked pieces
       if (team === 'r' && revealedPieces.includes(rc)) {
-        return revealedPieces.slice(revealedPieces.search(rc)+rc.length+1, -2);
+        const re = new RegExp(this.esc(rc) + '=\\[((?:\\d+.(?:,\\s)?)*)\\]');
+        return revealedPieces.match(re)[1];
       } else if (team === 'b' && revealedPieces.includes(bc)) {
-        return revealedPieces.slice(revealedPieces.search(bc)+bc.length+1, -2);
+        const re = new RegExp(this.esc(bc) + '=\\[((?:\\d+.(?:,\\s)?)*)\\]');
+        return revealedPieces.match(re)[1];
       }
-    } else if (powerUsers !== null) {
+    }
+    if (powerUsers !== null) {
       // Pieces that used powers
       if (team === 'r' && powerUsers.includes(rc)) {
         return "(" + powerUsers.slice(powerUsers.search(rc)+rc.length, -1) + ")";
@@ -73,30 +80,20 @@ class Board extends Component {
     }
   }
 
-  // TODO: Either add a visual difference for start and end squares or collapse into one concept
-  // NOTE: It may not be important to distinguish between them now. But may be with powers
-  isLastMoveStart(i,j) {
+  islastMove2(i,j) {
     const {team, lastMove} = this.props;
     if (lastMove === null) return false;
-    const rc = this.redCoord(i,j);
-    const bc = this.blueCoord(i,j);
-    if (team==='r' && lastMove.search(rc) < 4 && lastMove.search(rc) > -1) {
+    if (team==='r' && lastMove.includes(this.redCoord(i,j))) {
       return true;
     }
-    if (team==='b' && lastMove.search(bc) < 4 && lastMove.search(bc) > -1) {
+    if (team==='b' && lastMove.includes(this.blueCoord(i,j))) {
       return true;
     }
   }
 
-  isLastMoveEnd(i,j) {
-    const {team, lastMove} = this.props;
-    if (lastMove === null) return false;
-    if (team==='r' && lastMove.search(this.redCoord(i,j)) > 4) {
-      return true;
-    }
-    if (team==='b' && lastMove.search(this.blueCoord(i,j)) > 4) {
-      return true;
-    }
+  // NOTE: Need a proxy function here. Seems like a React bug
+  isLastMove(i,j) {
+    return this.islastMove2(i,j);
   }
 
   render() {
@@ -115,8 +112,7 @@ class Board extends Component {
           piece={this.parseRevealed(i, j) || (piecePositions[i] && piecePositions[i][j])}
           onClick={() => this.onClick(i+1,j+1)}
           showMoveIndicator={this.shouldShowMoveIndicator(i,j)}
-          showLastMoveStart={this.isLastMoveStart(i,j)}
-          showLastMoveEnd={this.isLastMoveEnd(i,j)}
+          showLastMove={this.isLastMove(i,j)}
         />);
       }
     }
