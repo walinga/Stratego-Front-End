@@ -71,17 +71,19 @@ class Square extends Component {
       row,
       col,
       piece,
-      showMoveIndicator,
       onClick,
-      showLastMove
+      showMoveIndicator,
+      showLastMove,
+      showSelectedPiece
     } = this.props;
     const squarePos = {top: row*75, left: col*75};
 
     return (
       <div className="Square" style={squarePos} onClick={onClick}>
         {this.getImage(piece) && <img src={this._fetchImage(this.getImage(piece))} alt="wolf" className="piece-img"></img>}
-        {showMoveIndicator && <span className="dot"></span>}
-        {showLastMove && <span className="orange-border"></span>}
+        {showSelectedPiece && <span className="selectedPiece"></span>}
+        {showMoveIndicator && <span className="possibleMoves"></span>}
+        {showLastMove && <span className="lastMove"></span>}
         <p className="piece-name" style={this.getStyle(piece)}>{this.prettyPrint(piece)}</p>
       </div>
     );

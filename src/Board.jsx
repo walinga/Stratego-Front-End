@@ -16,6 +16,7 @@ class Board extends Component {
     this.shouldShowMoveIndicator = this.shouldShowMoveIndicator.bind(this);
     this.parseRevealed = this.parseRevealed.bind(this);
     this.islastMove2 = this.islastMove2.bind(this);
+    this.showSelectedPiece = this.showSelectedPiece.bind(this);
   }
 
   onClick(i,j) {
@@ -96,6 +97,13 @@ class Board extends Component {
     return this.islastMove2(i,j);
   }
 
+  showSelectedPiece(i,j) {
+    const lc = this.state.lastClick;
+    if (!lc) return;
+    const [i1,j1] = this.props.team === 'r' ? [numRows-i,numCols-j] : [i+1,j+1]
+    return lc[0] === i1 && lc[1] === j1;
+  }
+
   render() {
     const {
       piecePositions,
@@ -115,6 +123,7 @@ class Board extends Component {
           onClick={() => this.onClick(i+1,j+1)}
           showMoveIndicator={this.shouldShowMoveIndicator(i,j)}
           showLastMove={this.isLastMove(i,j)}
+          showSelectedPiece={this.showSelectedPiece(i,j)}
         />);
       }
     }

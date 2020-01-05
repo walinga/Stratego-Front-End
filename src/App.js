@@ -9,10 +9,12 @@ class App extends Component {
     super();
     this.state = {
       started: false,
-      winner: false
+      winner: false,
+      newGame: false
     };
     this.sendSubmitTeam = this.sendSubmitTeam.bind(this);
     this.endGame = this.endGame.bind(this);
+    this.startNewGame = this.startNewGame.bind(this);
   }
 
   // TODO: Figure out a way to determine which team plays which colour
@@ -30,12 +32,18 @@ class App extends Component {
     })
   }
 
+  startNewGame(team) {
+    this.setState({ newGame: true });
+    window.location.href += '?team=red';
+  }
+
   endGame(team) {
     this.setState({winner: team});
   }
 
   getTeam() {
-    // TODO: Before implementing this, probably want gameId on the server
+    // IDEA: When a new 'base url' tab is opened, ask to start a new game;
+    //  then when a new game is started, display an opposite team URL to the user
     if (window.location.href.includes("?team=blue")) {
       return 'b';
     }
@@ -43,7 +51,9 @@ class App extends Component {
   }
 
   render() {
-    const {winner, started} = this.state;
+    const {winner, started, newGame} = this.state;
+
+    const displayNewGame = !window.location.href.includes("?team") && !newGame;
 
     return (
       <div className="App">
@@ -56,8 +66,13 @@ class App extends Component {
             <p className="game-over-text">Game Over!</p>
             <p>Winner:</p>{winner}
           </div>}
+          {displayNewGame && <div className="game-over-banner">
+            <h2>Start new game?</h2>
+            <button onClick={this.startNewGame}>Yes please</button>
+          </div>}
           <Game
-            started={started}
+            startNewGame={newGame}
+            submitted={started}
             onGameOver={(team) => this.endGame(team)}
             team={this.getTeam()}
           />
