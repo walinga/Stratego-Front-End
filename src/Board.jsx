@@ -97,6 +97,7 @@ class Board extends Component {
     return this.islastMove2(i,j);
   }
 
+  // TODO: Only show if on same team
   showSelectedPiece(i,j) {
     const lc = this.state.lastClick;
     if (!lc) return;

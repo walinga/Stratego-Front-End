@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import Board from './Board.jsx'
 
 // TODO: Need some actual URL to hit the server with (Heroku!?)
-export const herokuUrl = "192.168.0.18"// "localhost"
+export const herokuUrl = "https://stratego-ice-and-fire.herokuapp.com"// "http://localhost:8051"
 
 /*
  * A wrapper around the Game Component that handles the logic and API calls
@@ -27,7 +27,7 @@ class Game extends Component {
   componentDidMount() {
     const team = this.props.team;
     // TODO: Def should be a GET. Figure out how to parse URL params in Java
-    fetch(`http://${herokuUrl}:8051/getBoard`, {method: "POST", body: team})
+    fetch(`${herokuUrl}/getBoard`, {method: "POST", body: team})
     .then(response =>{
       console.log(response); // DEBUG
       return response.text(); // TODO: Jsonify here eventually
@@ -43,7 +43,7 @@ class Game extends Component {
   componentDidUpdate(prevProps) {
     if (this.props.startNewGame === prevProps.startNewGame) return;
     const team = this.props.team;
-    fetch(`http://${herokuUrl}:8051/newGame`, {method: "POST", body: team})
+    fetch(`${herokuUrl}/newGame`, {method: "POST", body: team})
     .then(response =>{
       return response.text(); // TODO: Jsonify here eventually
     }).then(data => {
@@ -55,7 +55,7 @@ class Game extends Component {
   onClickPiece(i,j) {
     console.log(i,j); //  DEBUG
     const team = this.props.team;
-    fetch(`http://${herokuUrl}:8051/getValidMoves`, {method: "POST", body: `${i},${j} ${team}`})
+    fetch(`${herokuUrl}/getValidMoves`, {method: "POST", body: `${i},${j} ${team}`})
     .then(response =>{
       console.log(response); // DEBUG
       return response.text(); // TODO: Jsonify here eventually
@@ -69,7 +69,7 @@ class Game extends Component {
   swapPieces(i1, j1, i2, j2) {
     console.log(i1, j1, i2, j2); //  DEBUG
     const team = this.props.team;
-    fetch(`http://${herokuUrl}:8051/swapPieces`, {method: "POST", body: `${i1},${j1} ${i2},${j2} ${team}`})
+    fetch(`${herokuUrl}/swapPieces`, {method: "POST", body: `${i1},${j1} ${i2},${j2} ${team}`})
     .then(response =>{
       console.log(response); // DEBUG
       return response.text(); // TODO: Jsonify here eventually
@@ -86,7 +86,7 @@ class Game extends Component {
     console.log("move piece!");
     console.log(i1, j1, i2, j2); //  DEBUG
     const team = this.props.team;
-    fetch(`http://${herokuUrl}:8051/makeMove`, {method: "POST", body: `${i1},${j1} ${i2},${j2} ${team}`})
+    fetch(`${herokuUrl}/makeMove`, {method: "POST", body: `${i1},${j1} ${i2},${j2} ${team}`})
     .then(response =>{
       console.log(response); // DEBUG
       return response.json();

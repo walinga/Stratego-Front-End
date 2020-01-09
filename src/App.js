@@ -22,7 +22,7 @@ class App extends Component {
 
   sendSubmitTeam() {
     const team = this.getTeam();
-    fetch(`http://${herokuUrl}:8051/submitTeam`, {method: "POST", body: team})
+    fetch(`${herokuUrl}/submitTeam`, {method: "POST", body: team})
     .then(response =>{
       console.log(response); // DEBUG
       return response.text(); // TODO: Jsonify here eventually

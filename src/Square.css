@@ -10,7 +10,7 @@
   height: 75px;
   opacity: 0.5;
   z-index: -2;
-  background-color: #b3b3b3;
+  background-color: #d1d6f1;
   position: absolute;
   top: 0;
   left: 0;
@@ -22,7 +22,7 @@
   width: 73px;
   height: 73px;
   position: absolute;
-  box-shadow: inset 0 0 10px #c4d8c8;
+  box-shadow: inset 0 0 15px #9aab9d;
   top: 0;
   left: 0;
 }
@@ -39,7 +39,8 @@
 }
 
 .piece-name {
-  font-size: 24px;
+  font-size: 18px;
+  font-weight: bold;
   position: absolute;
   top: 0;
   margin: 0;
