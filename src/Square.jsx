@@ -12,7 +12,7 @@ class Square extends Component {
     if (piece.includes('11')) {
       return 'F';
     }
-    // TODO: 10 attacking trap shows up as 10,0
+    // TODO (low priority): 10 attacking trap shows up as 10,0
     if (piece.includes('0') && !piece.includes('10')) {
       return piece.replace(/0./, 'T');
     }

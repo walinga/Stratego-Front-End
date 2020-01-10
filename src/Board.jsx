@@ -15,7 +15,7 @@ class Board extends Component {
     this.onClick = this.onClick.bind(this);
     this.shouldShowMoveIndicator = this.shouldShowMoveIndicator.bind(this);
     this.parseRevealed = this.parseRevealed.bind(this);
-    this.islastMove2 = this.islastMove2.bind(this);
+    this.isLastMove = this.isLastMove.bind(this);
     this.showSelectedPiece = this.showSelectedPiece.bind(this);
   }
 
@@ -81,7 +81,7 @@ class Board extends Component {
     }
   }
 
-  islastMove2(i,j) {
+  isLastMove(i,j) {
     const {team, lastMove} = this.props;
     if (lastMove === null) return false;
     if (team==='r' && lastMove.includes(this.redCoord(i,j))) {
@@ -92,12 +92,7 @@ class Board extends Component {
     }
   }
 
-  // NOTE: Need a proxy function here. Seems like a React bug
-  isLastMove(i,j) {
-    return this.islastMove2(i,j);
-  }
-
-  // TODO: Only show if on same team
+  // TODO: Consider only showing the highlight if the user selected their own piece
   showSelectedPiece(i,j) {
     const lc = this.state.lastClick;
     if (!lc) return;
@@ -113,8 +108,8 @@ class Board extends Component {
 
     let squares = [];
 
-    for (let i=0; i<numRows; i++) {
-      for (let j=0; j<numCols; j++) {
+    for (let i=0; i < numRows; i++) {
+      for (let j=0; j < numCols; j++) {
         squares.push(<Square
           key={[i,j]}
           row={i}

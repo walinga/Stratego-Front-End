@@ -35,6 +35,7 @@ class App extends Component {
   startNewGame(team) {
     this.setState({ newGame: true });
     window.location.href += '?team=red';
+    // TODO: Display the URL of the opposite team to this user (to send to a friend)
   }
 
   endGame(team) {
@@ -42,8 +43,6 @@ class App extends Component {
   }
 
   getTeam() {
-    // IDEA: When a new 'base url' tab is opened, ask to start a new game;
-    //  then when a new game is started, display an opposite team URL to the user
     if (window.location.href.includes("?team=blue")) {
       return 'b';
     }
@@ -60,6 +59,9 @@ class App extends Component {
         <div className="App-header">
           <h2>Stratego Deluxe Edition</h2>
           <h3>By Matthew Walinga</h3>
+          <a
+            className="rules-link"
+            href="https://www.hasbro.com/common/documents/dad288501c4311ddbd0b0800200c9a66/d15aa64019b9f36910b4ca23616082d8.pdf">Game Rules</a>
         </div>
         <div className="Game-stage">
           {winner && <div className="game-over-banner">

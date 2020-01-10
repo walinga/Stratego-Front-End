@@ -60,7 +60,12 @@ class Game extends Component {
       console.log("data:"); // DEBUG
       console.log(data);
       const positions = this.parseBoard(data.boardState);
-      this.setState({possibleMoves: data.validMoves, piecePositions: positions});
+      const lastMove = data.lastMove || null;
+      this.setState({
+        possibleMoves: data.validMoves,
+        piecePositions: positions,
+        lastMove: lastMove
+      });
     })
   }
 
@@ -116,15 +121,14 @@ class Game extends Component {
   }
 
   parseBoard(data) {
-    // NOTE: Could "easily" construct this using a list of coords from the server
     let positions = {};
     let pieceData = data.split(/\s+/).map(x => x.trim());
     if (this.props.team === 'r') {
       pieceData = pieceData.reverse().slice(1); // trailing newline
     }
-    // NOTE: stuff is orange because of some weird Atom syntax bug
-    for (let i=0;i<8;i++) {
-      for (let j=0; j<10; j++) {
+
+    for (let i = 0; i < 8; i++) {
+      for (let j = 0; j < 10; j++) {
         if (positions[i]) {
           positions[i][j] = pieceData[i*10+j];
         } else {
