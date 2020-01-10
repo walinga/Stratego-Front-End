@@ -2,11 +2,10 @@ import React, { Component } from 'react';
 
 import Board from './Board.jsx'
 
-// TODO: Need some actual URL to hit the server with (Heroku!?)
 export const herokuUrl = "https://stratego-ice-and-fire.herokuapp.com"// "http://localhost:8051"
 
 /*
- * A wrapper around the Game Component that handles the logic and API calls
+ * A wrapper around the Board Component that handles the logic and API calls
  */
 class Game extends Component {
   constructor(props) {
@@ -53,16 +52,15 @@ class Game extends Component {
   }
 
   onClickPiece(i,j) {
-    console.log(i,j); //  DEBUG
     const team = this.props.team;
     fetch(`${herokuUrl}/getValidMoves`, {method: "POST", body: `${i},${j} ${team}`})
     .then(response =>{
-      console.log(response); // DEBUG
-      return response.text(); // TODO: Jsonify here eventually
+      return response.json();
     }).then(data => {
       console.log("data:"); // DEBUG
       console.log(data);
-      this.setState({possibleMoves: data});
+      const positions = this.parseBoard(data.boardState);
+      this.setState({possibleMoves: data.validMoves, piecePositions: positions});
     })
   }
 
