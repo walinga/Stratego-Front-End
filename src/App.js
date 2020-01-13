@@ -10,15 +10,14 @@ class App extends Component {
     this.state = {
       started: false,
       winner: false,
-      newGame: false
+      newGame: false,
+
     };
     this.sendSubmitTeam = this.sendSubmitTeam.bind(this);
     this.endGame = this.endGame.bind(this);
     this.startNewGame = this.startNewGame.bind(this);
+    this.hideOppUrl = this.hideOppUrl.bind(this);
   }
-
-  // TODO: Figure out a way to determine which team plays which colour
-  // IDEA: Default is 'r'. Then generate a unique gameId -> send a link which will be 'b'
 
   sendSubmitTeam() {
     const team = this.getTeam();
@@ -33,9 +32,20 @@ class App extends Component {
   }
 
   startNewGame(team) {
-    this.setState({ newGame: true });
+    // TODO: Generate a gameId in place of the team URL param
+    this.setState({
+      newGame: true,
+      showOppUrl: true,
+      oppUrl: window.location.href + '?team=blue'
+    });
+  }
+
+  continueGame() {
     window.location.href += '?team=red';
-    // TODO: Display the URL of the opposite team to this user (to send to a friend)
+  }
+
+  hideOppUrl() {
+    this.setState({showOppUrl: false});
   }
 
   endGame(team) {
@@ -50,7 +60,7 @@ class App extends Component {
   }
 
   render() {
-    const {winner, started, newGame} = this.state;
+    const {winner, started, newGame, showOppUrl, oppUrl} = this.state;
 
     const displayNewGame = !window.location.href.includes("?team") && !newGame;
 
@@ -70,7 +80,13 @@ class App extends Component {
           </div>}
           {displayNewGame && <div className="game-over-banner">
             <h2>Start new game?</h2>
-            <button onClick={this.startNewGame}>Yes please</button>
+            <button className="confirm-btn" onClick={this.startNewGame}>Yes please</button>
+            <button className="confirm-btn" onClick={this.continueGame}>No thanks, continue!</button>
+          </div>}
+          {showOppUrl && <div className="game-over-banner">
+            <p>Send the following URL to a friend:</p>
+            <p>{oppUrl}</p>
+            <button onClick={this.hideOppUrl}>Start Game</button>
           </div>}
           <Game
             startNewGame={newGame}

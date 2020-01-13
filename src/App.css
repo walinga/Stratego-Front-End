@@ -58,6 +58,11 @@
   font-size: 30px;
 }
 
+.confirm-btn {
+  display: block;
+  margin: 10px auto;
+}
+
 .rules-link {
   color: pink;
 }

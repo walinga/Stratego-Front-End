@@ -14,10 +14,10 @@ class Square extends Component {
     }
     // TODO (low priority): 10 attacking trap shows up as 10,0
     if (piece.includes('0') && !piece.includes('10')) {
-      return piece.replace(/0./, 'T');
+      piece = piece.replace(/0./, 'T');
     }
-    if (/^1(r|b)/.test(piece)) {
-      return 'S';
+    if (/^1(r|b)|1(r|b)$/.test(piece) || (piece.includes('1') && !piece.includes('10') && !piece.includes('11'))) {
+      piece = piece.replace(/1(r|b)/, 'S');
     }
     return piece.replace(/O/, '').replace('r', '').replace('b', '');
   }
